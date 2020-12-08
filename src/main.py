@@ -25,17 +25,17 @@ OUTPUT_VIDEO_NAME = "cars.mp4"
 VIDEO_NAME = 'Videos_dataset_cars_cars.mp4'
 APP_DIR = my_app.data_dir + "/"
 
-api = sly.Api.from_env() #del
-video_info = api.video.get_info_by_id(VIDEO_ID)
-frame_per_second = video_info.frames_to_timecodes[1]
-STREAM_SPEED = 1 / frame_per_second
-
 
 @my_app.callback("render_video_labels_to_mp4")
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
     global START_FRAME
     global END_FRAME
+
+    video_info = api.video.get_info_by_id(VIDEO_ID)
+    frame_per_second = video_info.frames_to_timecodes[1]
+    STREAM_SPEED = 1 / frame_per_second
+
     meta_json = api.project.get_meta(PROJECT_ID)
     meta = sly.ProjectMeta.from_json(meta_json)
     key_id_map = KeyIdMap()
