@@ -7,12 +7,12 @@ from supervisely_lib.imaging.color import generate_rgb
 
 my_app = sly.AppService()
 
-PROJECT_ID = 1414
+PROJECT_ID = 1427
 TEAM_ID = 8
-VIDEO_ID = 375956 #animal
-#VIDEO_ID = 375957 #cars
+#VIDEO_ID = 375956 #animal
+VIDEO_ID = 376083 #cars
 START_FRAME = 50
-END_FRAME = 200
+END_FRAME = 140
 CLASSES = []
 COLOR_INS = True
 THICKNESS = 3
@@ -20,14 +20,12 @@ SHOW_NAMES = True #for bitmap and bbox
 
 FONT = cv2.FONT_HERSHEY_COMPLEX
 OPACITY = 0.5
-OUTPUT_VIDEO_NAME = "del_me_test_name_bbox_1070_animal.mp4"
+OUTPUT_VIDEO_NAME = "cars.mp4"
 
 VIDEO_NAME = 'Videos_dataset_cars_cars.mp4'
 APP_DIR = my_app.data_dir + "/"
-#Videos_dataset_animals_sea_lion.mp4
-#Videos_dataset_cars_cars.mp4
 
-api = sly.Api.from_env()
+api = sly.Api.from_env() #del
 video_info = api.video.get_info_by_id(VIDEO_ID)
 frame_per_second = video_info.frames_to_timecodes[1]
 STREAM_SPEED = 1 / frame_per_second
@@ -36,6 +34,8 @@ STREAM_SPEED = 1 / frame_per_second
 @my_app.callback("render_video_labels_to_mp4")
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
+    global START_FRAME
+    global END_FRAME
     meta_json = api.project.get_meta(PROJECT_ID)
     meta = sly.ProjectMeta.from_json(meta_json)
     key_id_map = KeyIdMap()
@@ -49,34 +49,34 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     ann_info = api.video.annotation.download(VIDEO_ID)
     ann = sly.VideoAnnotation.from_json(ann_info, meta, key_id_map)
 
-    # if END_FRAME is None or START_FRAME is None:
-    #     START_FRAME = 0
-    #     END_FRAME = ann.frames_count - 1
-    #
-    # if END_FRAME >= ann.frames_count:
-    #     raise ValueError("Frame: {!r} not found".format(END_FRAME))
+    if END_FRAME is None or START_FRAME is None:
+        START_FRAME = 0
+        END_FRAME = ann.frames_count - 1
 
-    frames_with_classes = []
-    fig_to_color = {}
+    if END_FRAME >= ann.frames_count:
+         raise ValueError("Frame: {!r} not found".format(END_FRAME))
+
+    obj_to_color = {}
     exist_colors = []
+    video = None
+
     for frame_number in range(START_FRAME, END_FRAME):
         frame_np = api.video.frame.download_np(VIDEO_ID, frame_number)
         ann_frame = ann.frames.get(frame_number)
 
         for fig in ann_frame.figures:
             if len(CLASSES) == 0 or fig.video_object.obj_class.name in CLASSES:
+                color = fig.video_object.obj_class.color
+
                 if COLOR_INS:
-                    if fig.video_object.key not in fig_to_color:
+                    if fig.video_object.key not in obj_to_color:
                         color = generate_rgb(exist_colors)
-                        fig_to_color[fig.video_object.key] = color
+                        obj_to_color[fig.video_object.key] = color
                         exist_colors.append(color)
                     else:
-                        color = fig_to_color[fig.video_object.key]
-                else:
-                    color = fig.video_object.obj_class.color
+                        color = obj_to_color[fig.video_object.key]
 
                 bbox = None
-
                 if fig.geometry.geometry_name() == BITMAP or fig.geometry.geometry_name() == 'polygon':
                     mask = np.zeros(frame_np.shape, dtype=np.uint8)
                     fig.geometry.draw(mask, color)
@@ -90,34 +90,29 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                     bbox.draw_contour(frame_np, color, THICKNESS)
 
                 if SHOW_NAMES == True:
-
-                    tl = round(0.002 * (frame_np.shape[0] + frame_np.shape[1]) / 2) + 1  # line/font thickness
-                    c1, c2 = (int(bbox.left), int(bbox.top)), (int(bbox.right), int(bbox.bottom))
-                    tf = max(tl - 1, 1)  # font thickness
-                    t_size = cv2.getTextSize(fig.video_object.obj_class.name, 0, fontScale=tl / 3, thickness=tf)[0]
+                    tl = 1  # line/font thickness
+                    c1, c2 = (bbox.left, bbox.top), (bbox.right, bbox.bottom)
+                    tf = 1  # font thickness
+                    t_size = cv2.getTextSize(fig.video_object.obj_class.name, FONT, fontScale=tl, thickness=tf)[0]
                     c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
 
                     cv2.rectangle(frame_np, c1, c2, fig.video_object.obj_class.color, -1, cv2.LINE_AA)  # filled
 
-                    cv2.putText(frame_np, fig.video_object.obj_class.name, (bbox.left + 10, bbox.top - 7),
+                    cv2.putText(frame_np, fig.video_object.obj_class.name, (bbox.left + 1, bbox.top - 1),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 [255, 255, 255],
                                 thickness=THICKNESS, lineType=cv2.LINE_AA, bottomLeftOrigin=False)
                 else:
                     raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
 
-        frames_with_classes.append(frame_np)
+        if video is None:
+            video = cv2.VideoWriter(VIDEO_NAME, cv2.VideoWriter_fourcc(*'MP4V'), STREAM_SPEED, (frame_np.shape[1], frame_np.shape[0]))
 
+        frame_np = cv2.cvtColor(frame_np, cv2.COLOR_BGR2RGB)
+        video.write(frame_np)
 
-    if len(frames_with_classes) == 0:
+    if video is None:
         raise ValueError('No frames to create video')
-
-    height, width, layers = frames_with_classes[0].shape
-    video = cv2.VideoWriter(VIDEO_NAME, cv2.VideoWriter_fourcc(*'MP4V'), STREAM_SPEED, (width, height))
-
-    for image in frames_with_classes:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        video.write(image)
 
     video.release()
 
