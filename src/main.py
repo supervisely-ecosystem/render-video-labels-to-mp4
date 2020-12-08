@@ -9,17 +9,18 @@ my_app = sly.AppService()
 
 PROJECT_ID = 1414
 TEAM_ID = 8
-#VIDEO_ID = 375956 #animal
-VIDEO_ID = 375957 #cars
+VIDEO_ID = 375956 #animal
+#VIDEO_ID = 375957 #cars
 START_FRAME = 50
 END_FRAME = 200
 CLASSES = []
 COLOR_INS = True
 THICKNESS = 3
-SHOW_NAMES = True
+SHOW_NAMES = True #for bitmap and bbox
+
 FONT = cv2.FONT_HERSHEY_COMPLEX
-OPACITY = 10
-OUTPUT_VIDEO_NAME = "del_me_test_name18.mp4"
+OPACITY = 0.5
+OUTPUT_VIDEO_NAME = "del_me_test_name_bbox_1070_animal.mp4"
 
 VIDEO_NAME = 'Videos_dataset_cars_cars.mp4'
 APP_DIR = my_app.data_dir + "/"
@@ -32,9 +33,9 @@ frame_per_second = video_info.frames_to_timecodes[1]
 STREAM_SPEED = 1 / frame_per_second
 
 
-@my_app.callback("upload_frame_range_to_team_files")
+@my_app.callback("render_video_labels_to_mp4")
 @sly.timeit
-def upload_frame_range_to_team_files(api: sly.Api, task_id, context, state, app_logger):
+def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
     meta_json = api.project.get_meta(PROJECT_ID)
     meta = sly.ProjectMeta.from_json(meta_json)
     key_id_map = KeyIdMap()
@@ -65,24 +66,43 @@ def upload_frame_range_to_team_files(api: sly.Api, task_id, context, state, app_
         for fig in ann_frame.figures:
             if len(CLASSES) == 0 or fig.video_object.obj_class.name in CLASSES:
                 if COLOR_INS:
-                    if fig.video_object._key not in fig_to_color:
+                    if fig.video_object.key not in fig_to_color:
                         color = generate_rgb(exist_colors)
-                        fig_to_color[fig.video_object._key] = color
+                        fig_to_color[fig.video_object.key] = color
                         exist_colors.append(color)
                     else:
-                        color = fig_to_color[fig.video_object._key]
+                        color = fig_to_color[fig.video_object.key]
                 else:
                     color = fig.video_object.obj_class.color
+
+                bbox = None
 
                 if fig.geometry.geometry_name() == BITMAP or fig.geometry.geometry_name() == 'polygon':
                     mask = np.zeros(frame_np.shape, dtype=np.uint8)
                     fig.geometry.draw(mask, color)
-                    fig.ImageDraw
                     frame_np = cv2.addWeighted(frame_np, 1, mask, OPACITY, 0)
+                    if SHOW_NAMES == True:
+                       bbox = fig.geometry.to_bbox()
+                       bbox.draw_contour(frame_np, color, THICKNESS)
+
                 elif fig.geometry.geometry_name() == 'rectangle':
-                     fig.geometry.draw_contour(frame_np, color, THICKNESS)
-                     if SHOW_NAMES == True:
-                        frame_np = cv2.putText(frame_np, fig.video_object.obj_class.name, (fig.geometry.left, fig.geometry.top), FONT, 1, (255, 255, 255))
+                    bbox = fig.geometry
+                    bbox.draw_contour(frame_np, color, THICKNESS)
+
+                if SHOW_NAMES == True:
+
+                    tl = round(0.002 * (frame_np.shape[0] + frame_np.shape[1]) / 2) + 1  # line/font thickness
+                    c1, c2 = (int(bbox.left), int(bbox.top)), (int(bbox.right), int(bbox.bottom))
+                    tf = max(tl - 1, 1)  # font thickness
+                    t_size = cv2.getTextSize(fig.video_object.obj_class.name, 0, fontScale=tl / 3, thickness=tf)[0]
+                    c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+
+                    cv2.rectangle(frame_np, c1, c2, fig.video_object.obj_class.color, -1, cv2.LINE_AA)  # filled
+
+                    cv2.putText(frame_np, fig.video_object.obj_class.name, (bbox.left + 10, bbox.top - 7),
+                                cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                [255, 255, 255],
+                                thickness=THICKNESS, lineType=cv2.LINE_AA, bottomLeftOrigin=False)
                 else:
                     raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
 
@@ -127,9 +147,8 @@ def main():
 #        "context.videoId": VIDEO_ID
     })
 
-    my_app.run(initial_events=[{"command": "upload_frame_range_to_team_files"}])
+    my_app.run(initial_events=[{"command": "render_video_labels_to_mp4"}])
 
 
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
-
