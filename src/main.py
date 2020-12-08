@@ -10,13 +10,13 @@ my_app = sly.AppService()
 PROJECT_ID = 1427
 TEAM_ID = 8
 #VIDEO_ID = 375956 #animal
-VIDEO_ID = 376083 #cars
+VIDEO_ID = 375957  #cars
 START_FRAME = 50
 END_FRAME = 140
 CLASSES = []
 COLOR_INS = True
 THICKNESS = 3
-SHOW_NAMES = True #for bitmap and bbox
+SHOW_NAMES = True
 
 FONT = cv2.FONT_HERSHEY_COMPLEX
 OPACITY = 0.5
@@ -33,22 +33,20 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     global END_FRAME
 
     video_info = api.video.get_info_by_id(VIDEO_ID)
+    if video_info is None:
+        raise ValueError("Video with id={!r} not found".format(VIDEO_ID))
+
     frame_per_second = video_info.frames_to_timecodes[1]
-    STREAM_SPEED = 1 / frame_per_second
+    stream_speed = 1 / frame_per_second
 
     meta_json = api.project.get_meta(PROJECT_ID)
     meta = sly.ProjectMeta.from_json(meta_json)
     key_id_map = KeyIdMap()
-
-    if video_info is None:
-        raise RuntimeError("Video with id={!r} not found".format(VIDEO_ID))
-
     if len(meta.obj_classes) == 0:
         raise ValueError("No classses in project")
 
     ann_info = api.video.annotation.download(VIDEO_ID)
     ann = sly.VideoAnnotation.from_json(ann_info, meta, key_id_map)
-
     if END_FRAME is None or START_FRAME is None:
         START_FRAME = 0
         END_FRAME = ann.frames_count - 1
@@ -59,7 +57,6 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     obj_to_color = {}
     exist_colors = []
     video = None
-
     for frame_number in range(START_FRAME, END_FRAME):
         frame_np = api.video.frame.download_np(VIDEO_ID, frame_number)
         ann_frame = ann.frames.get(frame_number)
@@ -106,7 +103,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                     raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
 
         if video is None:
-            video = cv2.VideoWriter(VIDEO_NAME, cv2.VideoWriter_fourcc(*'MP4V'), STREAM_SPEED, (frame_np.shape[1], frame_np.shape[0]))
+            video = cv2.VideoWriter(VIDEO_NAME, cv2.VideoWriter_fourcc(*'MP4V'), stream_speed, (frame_np.shape[1], frame_np.shape[0]))
 
         frame_np = cv2.cvtColor(frame_np, cv2.COLOR_BGR2RGB)
         video.write(frame_np)
