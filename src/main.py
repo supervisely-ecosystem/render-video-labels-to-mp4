@@ -1,9 +1,7 @@
 import os
 from distutils import util
 import cv2
-import time
 import numpy as np
-import faulthandler; faulthandler.enable()
 
 import supervisely_lib as sly
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
@@ -20,13 +18,6 @@ SHOW_NAMES = bool(util.strtobool(os.environ['modal.state.showClassName']))
 THICKNESS = int(os.environ['modal.state.thickness'])
 OPACITY = float(os.environ['modal.state.opacity'])
 
-a = sly.Api.from_env()
-
-time.sleep(60 * 20)
-print("list before")
-a.workspace.get_list(TEAM_ID)
-print("list after")
-
 my_app = sly.AppService()
 
 PROJECT_ID = None
@@ -39,31 +30,16 @@ FONT = cv2.FONT_HERSHEY_COMPLEX
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
     global VIDEO_ID, START_FRAME, END_FRAME, PROJECT_ID
-    app_logger.info("--> 1 {}".format(VIDEO_ID))
     if VIDEO_ID == "":
         raise ValueError("Video ID is not defined")
-    app_logger.info("--> 2")
     VIDEO_ID = int(VIDEO_ID)
-    print("---", VIDEO_ID)
-    print("---", type(VIDEO_ID))
-    app_logger.info("--> 3 {} {}".format(type(VIDEO_ID), VIDEO_ID))
-    try:
-        print("list before")
-        api.workspace.get_list(TEAM_ID)
-        print("list after")
-        video_info = api.video.get_info_by_id(371532) #VIDEO_ID)
-    except Exception as e:
-        print(repr(e))
-    app_logger.info("--> 4")
+    video_info = api.video.get_info_by_id(VIDEO_ID)
     if video_info is None:
         raise ValueError("Video with id={!r} not found".format(VIDEO_ID))
-    app_logger.info("--> 5")
     PROJECT_ID = video_info.project_id
-    app_logger.info("--> 6")
     if ALL_FRAMES is True:
         START_FRAME = 0
         END_FRAME = video_info.frames_count - 1
-        app_logger.info("--> 3")
     else:
         if START_FRAME == 0 and END_FRAME == 0:
             raise ValueError("Frame Range is not defined")
@@ -75,7 +51,6 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
     frame_per_second = video_info.frames_to_timecodes[1]
     stream_speed = 1 / frame_per_second
-    app_logger.info("--> 4")
 
     meta_json = api.project.get_meta(PROJECT_ID)
     meta = sly.ProjectMeta.from_json(meta_json)
@@ -83,7 +58,6 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     if len(meta.obj_classes) == 0:
         raise ValueError("No classes in project")
 
-    app_logger.info("--> 5")
     ann_info = api.video.annotation.download(VIDEO_ID)
     ann = sly.VideoAnnotation.from_json(ann_info, meta, key_id_map)
 
