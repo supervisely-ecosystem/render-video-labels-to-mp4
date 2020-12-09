@@ -2,6 +2,7 @@ import os
 from distutils import util
 import cv2
 import numpy as np
+import faulthandler; faulthandler.enable()
 
 import supervisely_lib as sly
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
