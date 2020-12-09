@@ -121,6 +121,8 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
         video.write(frame_np)
         progress.iter_done_report()
 
+    sly.fs.log_tree(my_app.data_dir)
+
     if video is None:
         raise ValueError('No frames to create video')
     video.release()
