@@ -22,6 +22,12 @@
 
 Creates presentation mp4 file based on labeled video. Object instances are always rendered with random colors. It helps to distinguish objects of the same class on the frame. Class name is rendered with original class color. 
 
+Example of the results:
+Example: bitmap with opacity  |  Example: rectangles
+:-------------------------:|:-----------------------------------:
+[![Watch the video](https://i.imgur.com/MlKpFop.png)](https://youtu.be/htUaZ8su_M0)  |  [![Watch the video](https://i.imgur.com/aNwT5Tr.png)](https://youtu.be/DQnkGpM-ivM)
+
+
 ## How To Use
 
 **Step 1:** Add app to your team from Ecosystem if it is not there
