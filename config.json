@@ -5,7 +5,7 @@
     "videos",
     "presentation"
   ],
-  "description": "Renders presentation mp4 file based on labeled video",
+  "description": "Creates presentation mp4 file based on labeled video",
   "docker_image": "supervisely/base-py-sdk:6",
   "main_script": "src/main.py",
   "modal_template": "src/modal.html",
