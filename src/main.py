@@ -40,9 +40,11 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
         raise ValueError("Video with id={!r} not found".format(VIDEO_ID))
     PROJECT_ID = video_info.project_id
 
+    app_logger.info("--> 2")
     if ALL_FRAMES is True:
         START_FRAME = 0
         END_FRAME = video_info.frames_count - 1
+        app_logger.info("--> 3")
     else:
         if START_FRAME == 0 and END_FRAME == 0:
             raise ValueError("Frame Range is not defined")
@@ -54,6 +56,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
     frame_per_second = video_info.frames_to_timecodes[1]
     stream_speed = 1 / frame_per_second
+    app_logger.info("--> 4")
 
     meta_json = api.project.get_meta(PROJECT_ID)
     meta = sly.ProjectMeta.from_json(meta_json)
@@ -61,6 +64,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     if len(meta.obj_classes) == 0:
         raise ValueError("No classes in project")
 
+    app_logger.info("--> 5")
     ann_info = api.video.annotation.download(VIDEO_ID)
     ann = sly.VideoAnnotation.from_json(ann_info, meta, key_id_map)
 
