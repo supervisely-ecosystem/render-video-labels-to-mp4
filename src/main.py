@@ -2,6 +2,7 @@ import os
 from distutils import util
 import cv2
 import numpy as np
+import time
 
 import supervisely_lib as sly
 from supervisely_lib.video_annotation.key_id_map import KeyIdMap
@@ -124,7 +125,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     if video is None:
         raise ValueError('No frames to create video')
     video.release()
-
+    time.sleep(8999)
     print(sly.fs.list_dir_recursively(my_app.data_dir))
 
     remote_path = os.path.join('/rendered_videos', "{}_{}".format(VIDEO_ID, video_info.name))
