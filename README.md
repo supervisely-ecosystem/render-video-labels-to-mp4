@@ -38,10 +38,12 @@ Creates presentation mp4 file based on labeled video. Object instances are alway
 
 <img src="https://i.imgur.com/7Zx57yP.png" width="450px"/>
 
-**Step 4:** Wait until task is finished. Result video is saved to `Team Files` to directory: `/rendered_videos/` with name `<video-id>_<video-name>.mp4`. File can be download directly from team files (right click on the file -> `Download`) or from workspace tasks list by clicking on the download URL in task output column
+**Step 4:** Wait until task is finished. Result video is saved to `Team Files` to directory: `/rendered_videos/` with name `<video-id>_<video-name>.mp4`. 
+
+File can be download directly from team files (right click on the file -> `Download`) 
+
+<img src="https://i.imgur.com/NwZ3AMK.png"/>
+
+or from workspace tasks list by clicking on the download URL in task output column
 
 <img src="https://i.imgur.com/sw0m9cw.png"/>
-
-
-
-App saves link to report to team files: `/reports/video_objects_stats_for_every_class/<project id>_<project_name>.lnk`. Link to generated report also available in task output column
