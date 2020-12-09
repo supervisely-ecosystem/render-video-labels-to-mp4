@@ -1,9 +1,24 @@
 <div>
     <sly-field title="Input Video ID"
-               description="define id of the labeled video">
+               description="Define id of the labeled video">
         <sly-icon slot="icon" :options="{ color: '#2cd26e', bgColor: '#d8f8e7', rounded: false }">
             <i class="zmdi zmdi-key"></i>
         </sly-icon>
         <el-input placeholder="Please input video id" v-model="state.videoId"></el-input>
+    </sly-field>
+    <sly-field title="Frame range"
+               description="Entire video or frame range">
+        <sly-icon slot="icon" :options="{ color: '#ceadff', bgColor: '#f6ebff', rounded: false }">
+            <i class="zmdi zmdi-collection-video"></i>
+        </sly-icon>
+        <el-checkbox v-model="state.allFrames">Render entire video</el-checkbox>
+        <div class="fflex mt5">
+            <div style="min-width:80px;">Start frame:</div>
+            <el-input-number v-model="state.startFrame" :disabled="state.allFrames"></el-input-number>
+        </div>
+        <div class="fflex mt5">
+            <div style="min-width:80px;">End frame:</div>
+            <el-input-number v-model="state.endFrame" :disabled="state.allFrames"></el-input-number>
+        </div>
     </sly-field>
 </div>
