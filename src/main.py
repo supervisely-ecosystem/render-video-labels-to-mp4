@@ -22,7 +22,7 @@ OPACITY = float(os.environ['modal.state.opacity'])
 
 a = sly.Api.from_env()
 
-time.sleep(60 * 20)
+#time.sleep(60 * 20)
 print("list before")
 a.workspace.get_list(TEAM_ID)
 print("list after")
