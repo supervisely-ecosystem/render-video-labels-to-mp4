@@ -1,4 +1,5 @@
-import distutils
+import os
+from distutils import util
 import cv2
 import numpy as np
 
@@ -7,43 +8,50 @@ from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 from supervisely_lib.geometry.constants import BITMAP
 from supervisely_lib.imaging.color import generate_rgb
 
-
 my_app = sly.AppService()
 
 TEAM_ID = int(os.environ['context.teamId'])
 WORKSPACE_ID = int(os.environ['context.workspaceId'])
-
-VIDEO_ID = int(os.environ['modal.state.videoId'])
-ALL_FRAMES = bool(os.environ['modal.state.allFrames'])
+VIDEO_ID = os.environ['modal.state.videoId']
+ALL_FRAMES = bool(util.strtobool(os.environ['modal.state.allFrames']))
 START_FRAME = int(os.environ['modal.state.startFrame'])
 END_FRAME = int(os.environ['modal.state.endFrame'])
-
+SHOW_NAMES = bool(util.strtobool(os.environ['modal.state.showClassName']))
 THICKNESS = int(os.environ['modal.state.thickness'])
+OPACITY = float(os.environ['modal.state.opacity'])
+
 
 PROJECT_ID = None
-
 CLASSES = []
 COLOR_INS = True
-THICKNESS = 3
-SHOW_NAMES = True
-
 FONT = cv2.FONT_HERSHEY_COMPLEX
-OPACITY = 0.5
 OUTPUT_VIDEO_NAME = "cars.mp4"
-
 VIDEO_NAME = 'Videos_dataset_cars_cars.mp4'
-APP_DIR = my_app.data_dir + "/"
 
 
 @my_app.callback("render_video_labels_to_mp4")
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
-    global START_FRAME
-    global END_FRAME
+    global VIDEO_ID, START_FRAME, END_FRAME
 
+    if VIDEO_ID == "":
+        raise ValueError("Video ID is not defined")
+    VIDEO_ID = int(VIDEO_ID)
     video_info = api.video.get_info_by_id(VIDEO_ID)
     if video_info is None:
         raise ValueError("Video with id={!r} not found".format(VIDEO_ID))
+
+    if ALL_FRAMES is True:
+        START_FRAME = 0
+        END_FRAME = video_info.frames_count - 1
+    else:
+        if START_FRAME == 0 and END_FRAME == 0:
+            raise ValueError("Frame Range is not defined")
+        if END_FRAME >= video_info.frames_count:
+            app_logger.warn("End Frame {} is out of range: video has only {} frames"
+                            .format(END_FRAME, video_info.frames_count))
+            END_FRAME = video_info.frames_count - 1
+            app_logger.warn("End Frame has been set to {}".format(END_FRAME))
 
     frame_per_second = video_info.frames_to_timecodes[1]
     stream_speed = 1 / frame_per_second
@@ -52,16 +60,10 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     meta = sly.ProjectMeta.from_json(meta_json)
     key_id_map = KeyIdMap()
     if len(meta.obj_classes) == 0:
-        raise ValueError("No classses in project")
+        raise ValueError("No classes in project")
 
     ann_info = api.video.annotation.download(VIDEO_ID)
     ann = sly.VideoAnnotation.from_json(ann_info, meta, key_id_map)
-    if END_FRAME is None or START_FRAME is None:
-        START_FRAME = 0
-        END_FRAME = ann.frames_count - 1
-
-    if END_FRAME >= ann.frames_count:
-         raise ValueError("Frame: {!r} not found".format(END_FRAME))
 
     obj_to_color = {}
     exist_colors = []
@@ -140,14 +142,16 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
 def main():
     sly.logger.info("Script arguments", extra={
-        "PROJECT_ID": PROJECT_ID,
+        "TEAM_ID": TEAM_ID,
+        "WORKSPACE_ID": WORKSPACE_ID,
         "VIDEO_ID": VIDEO_ID,
-#        "START_FRAME": START_FRAME,
-#        "END_FRAME": END_FRAME
-#        "context.projectId": PROJECT_ID,
-#        "context.videoId": VIDEO_ID
+        "ALL_FRAMES": ALL_FRAMES,
+        "START_FRAME": START_FRAME,
+        "END_FRAME": END_FRAME,
+        "SHOW_NAMES": SHOW_NAMES,
+        "THICKNESS": THICKNESS,
+        "OPACITY": OPACITY
     })
-
     my_app.run(initial_events=[{"command": "render_video_labels_to_mp4"}])
 
 
