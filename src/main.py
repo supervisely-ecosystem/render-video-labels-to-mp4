@@ -34,13 +34,16 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     app_logger.info("--> 1")
     if VIDEO_ID == "":
         raise ValueError("Video ID is not defined")
+    app_logger.info("--> 2")
     VIDEO_ID = int(VIDEO_ID)
+    app_logger.info("--> 3")
     video_info = api.video.get_info_by_id(VIDEO_ID)
+    app_logger.info("--> 4")
     if video_info is None:
         raise ValueError("Video with id={!r} not found".format(VIDEO_ID))
+    app_logger.info("--> 5")
     PROJECT_ID = video_info.project_id
-
-    app_logger.info("--> 2")
+    app_logger.info("--> 6")
     if ALL_FRAMES is True:
         START_FRAME = 0
         END_FRAME = video_info.frames_count - 1
