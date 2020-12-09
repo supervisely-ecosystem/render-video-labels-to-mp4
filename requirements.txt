@@ -1,1 +1,2 @@
 supervisely==6.1.28
+requests==2.24.0
