@@ -125,12 +125,9 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     if video is None:
         raise ValueError('No frames to create video')
     video.release()
-    time.sleep(8999)
-    print(sly.fs.list_dir_recursively(my_app.data_dir))
 
     remote_path = os.path.join('/rendered_videos', "{}_{}".format(VIDEO_ID, video_info.name))
     remote_path = api.file.get_free_name(TEAM_ID, remote_path)
-
     upload_progress = []
     def _print_progress(monitor, upload_progress):
         if len(upload_progress) == 0:
@@ -140,7 +137,6 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                                                 is_size=True))
         upload_progress[0].set_current_value(monitor.bytes_read)
 
-    print("exists", sly.fs.file_exists(local_path))
     file_info = api.file.upload(TEAM_ID, local_path, remote_path, lambda m: _print_progress(m, upload_progress))
     app_logger.info("Uploaded to Team-Files: {!r}".format(remote_path))
     api.task._set_custom_output(task_id, file_info.id, file_info.name,
