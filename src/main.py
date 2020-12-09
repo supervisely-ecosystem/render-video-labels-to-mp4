@@ -38,7 +38,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     VIDEO_ID = int(VIDEO_ID)
     print("---", VIDEO_ID)
     print("---", type(VIDEO_ID))
-    app_logger.info("--> 3", VIDEO_ID)# type(VIDEO_ID), VIDEO_ID)
+    app_logger.info("--> 3 {} {}".format(type(VIDEO_ID), VIDEO_ID))
     video_info = api.video.get_info_by_id(VIDEO_ID)
     app_logger.info("--> 4")
     if video_info is None:
