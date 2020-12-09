@@ -140,7 +140,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     file_info = api.file.upload(TEAM_ID, local_path, remote_path, lambda m: _print_progress(m, upload_progress))
     app_logger.info("Uploaded to Team-Files: {!r}".format(remote_path))
     api.task._set_custom_output(task_id, file_info.id, file_info.name,
-                                description="File mp4", icon="zmdi zmdi-cloud-download")
+                                description="File mp4", icon="zmdi zmdi-cloud-download", download=True)
     sly.fs.silent_remove(local_path)
     my_app.stop()
 
