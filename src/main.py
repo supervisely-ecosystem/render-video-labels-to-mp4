@@ -25,14 +25,12 @@ PROJECT_ID = None
 CLASSES = []
 COLOR_INS = True
 FONT = cv2.FONT_HERSHEY_COMPLEX
-OUTPUT_VIDEO_NAME = "cars.mp4"
-VIDEO_NAME = 'Videos_dataset_cars_cars.mp4'
 
 
 @my_app.callback("render_video_labels_to_mp4")
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
-    global VIDEO_ID, START_FRAME, END_FRAME
+    global VIDEO_ID, START_FRAME, END_FRAME, PROJECT_ID
 
     if VIDEO_ID == "":
         raise ValueError("Video ID is not defined")
@@ -40,6 +38,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     video_info = api.video.get_info_by_id(VIDEO_ID)
     if video_info is None:
         raise ValueError("Video with id={!r} not found".format(VIDEO_ID))
+    PROJECT_ID = video_info.project_id
 
     if ALL_FRAMES is True:
         START_FRAME = 0
@@ -68,6 +67,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     obj_to_color = {}
     exist_colors = []
     video = None
+    local_path = os.path.join(my_app.data_dir, video_info.name)
     for frame_number in range(START_FRAME, END_FRAME):
         frame_np = api.video.frame.download_np(VIDEO_ID, frame_number)
         ann_frame = ann.frames.get(frame_number)
@@ -114,28 +114,34 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                     raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
 
         if video is None:
-            video = cv2.VideoWriter(VIDEO_NAME, cv2.VideoWriter_fourcc(*'MP4V'), stream_speed, (frame_np.shape[1], frame_np.shape[0]))
+            video = cv2.VideoWriter(local_path,
+                                    cv2.VideoWriter_fourcc(*'MP4V'),
+                                    stream_speed,
+                                    (frame_np.shape[1], frame_np.shape[0]))
 
         frame_np = cv2.cvtColor(frame_np, cv2.COLOR_BGR2RGB)
         video.write(frame_np)
 
     if video is None:
         raise ValueError('No frames to create video')
-
     video.release()
 
-    upload_progress = []
+    remote_path = os.path.join()
+    remote_path = api.file.get_free_name(TEAM_ID, remote_path)
 
+    upload_progress = []
     def _print_progress(monitor, upload_progress):
         if len(upload_progress) == 0:
-            upload_progress.append(sly.Progress(message="Upload {!r}".format(VIDEO_NAME),
+            upload_progress.append(sly.Progress(message="Upload {!r}".format(video.name),
                                                 total_cnt=monitor.len,
                                                 ext_logger=app_logger,
                                                 is_size=True))
         upload_progress[0].set_current_value(monitor.bytes_read)
 
-    file_info = api.file.upload(TEAM_ID, VIDEO_NAME, OUTPUT_VIDEO_NAME, lambda m: _print_progress(m, upload_progress))
-    app_logger.info("Uploaded to Team-Files: {!r}".format(file_info.full_storage_url))
+    file_info = api.file.upload(TEAM_ID, local_path, remote_path, lambda m: _print_progress(m, upload_progress))
+    app_logger.info("Uploaded to Team-Files: {!r}".format(remote_path))
+    api.task._set_custom_output(task_id, file_info.id, sly.fs.get_file_name_with_ext(file_remote),
+                                description="File mp4", icon="zmdi zmdi-cloud-download")
 
     my_app.stop()
 
