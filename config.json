@@ -1,23 +1,20 @@
 {
-  "name": "Convert Supervisely to YOLO v5 format",
+  "name": "Render Video Labels to MP4",
   "type": "app",
   "categories": [
-    "yolov5",
-    "convert format"
+    "videos",
+    "presentation"
   ],
-  "description": "Transform project to YOLO v5 format and prepares tar archive for download",
+  "description": "Renders presentation mp4 file based on labeled video",
   "docker_image": "supervisely/base-py-sdk:6",
-  "main_script": "src/convert_sly_to_yolov5.py",
+  "main_script": "src/main.py",
   "modal_template": "src/modal.html",
-  "modal_template_state": {},
-  "gui_template": "src/gui.html",
+  "modal_template_state": {
+    "videoId": ""
+  },
   "task_location": "workspace_tasks",
   "isolate": true,
   "headless": true,
-  "icon": "https://i.imgur.com/pz3eSzx.png",
-  "icon_background": "#FFFFFF",
-  "context_menu": {
-    "target": ["images_project"],
-    "context_root": "Download as"
-  }
+  "icon": "https://i.imgur.com/zreX0nl.png",
+  "icon_background": "#FFFFFF"
 }

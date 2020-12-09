@@ -1,3 +1,4 @@
 /secret_debug.env
 .idea
 *.mp4
+venv

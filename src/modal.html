@@ -1,2 +1,9 @@
 <div>
+    <sly-field title="Input Video ID"
+               description="define id of the labeled video">
+        <sly-icon slot="icon" :options="{ color: '#2cd26e', bgColor: '#d8f8e7', rounded: false }">
+            <i class="zmdi zmdi-key"></i>
+        </sly-icon>
+        <el-input placeholder="Please input video id" v-model="state.videoId"></el-input>
+    </sly-field>
 </div>
