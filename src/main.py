@@ -41,6 +41,8 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     print("---", type(VIDEO_ID))
     app_logger.info("--> 3 {} {}".format(type(VIDEO_ID), VIDEO_ID))
     try:
+        api.workspace.get_list(TEAM_ID)
+        print("list done")
         video_info = api.video.get_info_by_id(371532) #VIDEO_ID)
     except Exception as e:
         print(repr(e))
