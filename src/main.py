@@ -65,7 +65,9 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     obj_to_color = {}
     exist_colors = []
     video = None
-    local_path = os.path.join(my_app.data_dir, video_info.name)
+
+    mp4_name = sly.fs.get_file_name(video_info.name) + ".mp4"
+    local_path = os.path.join(my_app.data_dir, mp4_name)
     progress = sly.Progress(video_info.name, END_FRAME - START_FRAME + 1)
     for frame_number in range(START_FRAME, END_FRAME):
         frame_np = api.video.frame.download_np(VIDEO_ID, frame_number)
@@ -126,12 +128,12 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
         raise ValueError('No frames to create video')
     video.release()
 
-    remote_path = os.path.join('/rendered_videos', "{}_{}".format(VIDEO_ID, video_info.name))
+    remote_path = os.path.join('/rendered_videos', "{}_{}".format(VIDEO_ID, mp4_name))
     remote_path = api.file.get_free_name(TEAM_ID, remote_path)
     upload_progress = []
     def _print_progress(monitor, upload_progress):
         if len(upload_progress) == 0:
-            upload_progress.append(sly.Progress(message="Upload {!r}".format(video_info.name),
+            upload_progress.append(sly.Progress(message="Upload {!r}".format(mp4_name),
                                                 total_cnt=monitor.len,
                                                 ext_logger=app_logger,
                                                 is_size=True))
