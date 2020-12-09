@@ -1,6 +1,7 @@
 import os
 from distutils import util
 import cv2
+import time
 import numpy as np
 import faulthandler; faulthandler.enable()
 
@@ -20,6 +21,8 @@ THICKNESS = int(os.environ['modal.state.thickness'])
 OPACITY = float(os.environ['modal.state.opacity'])
 
 a = sly.Api.from_env()
+
+time.sleep(60 * 20)
 print("list before")
 a.workspace.get_list(TEAM_ID)
 print("list after")
