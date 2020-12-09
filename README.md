@@ -34,8 +34,11 @@ Creates presentation mp4 file based on labeled video.
 
 <img src="https://i.imgur.com/dmXj7K3.png"/>
 
-**Step 3:** Define input arguments in modal window: `video id`, `line width`, `opacity` for bitmap objects, `frame range`, etc..
+**Step 3:** Define input arguments in modal window: `video id`, `line width`, `opacity` for bitmap objects, `frame range`, etc.. and press `Run` button
 
 <img src="https://i.imgur.com/7Zx57yP.png" width="450px"/>
 
-**Step 4:** App saves link to report to team files: `/reports/video_objects_stats_for_every_class/<project id>_<project_name>.lnk`. Link to generated report also available in task output column
+**Step 4:** Wait until task is finished. Result video is saved to `Team Files` to directory: `/rendered_videos/` with name `<video-id>_<video-name>.mp4`. 
+
+
+App saves link to report to team files: `/reports/video_objects_stats_for_every_class/<project id>_<project_name>.lnk`. Link to generated report also available in task output column
