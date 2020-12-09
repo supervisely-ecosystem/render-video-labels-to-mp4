@@ -32,7 +32,7 @@ FONT = cv2.FONT_HERSHEY_COMPLEX
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
     global VIDEO_ID, START_FRAME, END_FRAME, PROJECT_ID
-    app_logger.info("--> 1", VIDEO_ID)
+    app_logger.info("--> 1 {}".format(VIDEO_ID))
     if VIDEO_ID == "":
         raise ValueError("Video ID is not defined")
     app_logger.info("--> 2")
