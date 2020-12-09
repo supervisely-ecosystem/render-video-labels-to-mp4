@@ -9,6 +9,11 @@ from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 from supervisely_lib.geometry.constants import BITMAP
 from supervisely_lib.imaging.color import generate_rgb
 
+a = sly.Api.from_env()
+print("list before")
+a.workspace.get_list(TEAM_ID)
+print("list after")
+
 my_app = sly.AppService()
 
 TEAM_ID = int(os.environ['context.teamId'])
