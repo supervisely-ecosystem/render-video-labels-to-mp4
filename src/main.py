@@ -121,11 +121,11 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
         video.write(frame_np)
         progress.iter_done_report()
 
-    sly.fs.log_tree(my_app.data_dir, app_logger)
-
     if video is None:
         raise ValueError('No frames to create video')
     video.release()
+
+    print(sly.fs.list_dir_recursively(my_app.data_dir, app_logger))
 
     remote_path = os.path.join('/rendered_videos', "{}_{}".format(VIDEO_ID, video_info.name))
     remote_path = api.file.get_free_name(TEAM_ID, remote_path)
