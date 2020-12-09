@@ -32,7 +32,7 @@ Example: bitmap with opacity  |  Example: rectangles
 
 **Step 1:** Add app to your team from Ecosystem if it is not there
 
-**Step 2:** Copy to clicpboard id of the video that should be rendered with labels
+**Step 2:** Copy to clipboard id of the video that should be rendered with labels
 
 <img src="https://i.imgur.com/DssYeoe.png"/>
 
