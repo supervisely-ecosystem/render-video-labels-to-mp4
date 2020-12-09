@@ -47,3 +47,4 @@ File can be download directly from team files (right click on the file -> `Downl
 or from workspace tasks list by clicking on the download URL in task output column
 
 <img src="https://i.imgur.com/VJwrmpH.png"/>
+
