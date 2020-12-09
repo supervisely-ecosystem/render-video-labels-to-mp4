@@ -68,48 +68,48 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     progress = sly.Progress(video_info.name, END_FRAME - START_FRAME + 1)
     for frame_number in range(START_FRAME, END_FRAME):
         frame_np = api.video.frame.download_np(VIDEO_ID, frame_number)
-        ann_frame = ann.frames.get(frame_number)
+        ann_frame = ann.frames.get(frame_number, None)
+        if ann_frame is not None:
+            for fig in ann_frame.figures:
+                if len(CLASSES) == 0 or fig.video_object.obj_class.name in CLASSES:
+                    color = fig.video_object.obj_class.color
 
-        for fig in ann_frame.figures:
-            if len(CLASSES) == 0 or fig.video_object.obj_class.name in CLASSES:
-                color = fig.video_object.obj_class.color
+                    if COLOR_INS:
+                        if fig.video_object.key not in obj_to_color:
+                            color = generate_rgb(exist_colors)
+                            obj_to_color[fig.video_object.key] = color
+                            exist_colors.append(color)
+                        else:
+                            color = obj_to_color[fig.video_object.key]
 
-                if COLOR_INS:
-                    if fig.video_object.key not in obj_to_color:
-                        color = generate_rgb(exist_colors)
-                        obj_to_color[fig.video_object.key] = color
-                        exist_colors.append(color)
-                    else:
-                        color = obj_to_color[fig.video_object.key]
+                    bbox = None
+                    if fig.geometry.geometry_name() == BITMAP or fig.geometry.geometry_name() == 'polygon':
+                        mask = np.zeros(frame_np.shape, dtype=np.uint8)
+                        fig.geometry.draw(mask, color)
+                        frame_np = cv2.addWeighted(frame_np, 1, mask, OPACITY, 0)
+                        if SHOW_NAMES == True:
+                           bbox = fig.geometry.to_bbox()
+                           bbox.draw_contour(frame_np, color, THICKNESS)
 
-                bbox = None
-                if fig.geometry.geometry_name() == BITMAP or fig.geometry.geometry_name() == 'polygon':
-                    mask = np.zeros(frame_np.shape, dtype=np.uint8)
-                    fig.geometry.draw(mask, color)
-                    frame_np = cv2.addWeighted(frame_np, 1, mask, OPACITY, 0)
+                    elif fig.geometry.geometry_name() == 'rectangle':
+                        bbox = fig.geometry
+                        bbox.draw_contour(frame_np, color, THICKNESS)
+
                     if SHOW_NAMES == True:
-                       bbox = fig.geometry.to_bbox()
-                       bbox.draw_contour(frame_np, color, THICKNESS)
+                        tl = 1  # line/font thickness
+                        c1, c2 = (bbox.left, bbox.top), (bbox.right, bbox.bottom)
+                        tf = 1  # font thickness
+                        t_size = cv2.getTextSize(fig.video_object.obj_class.name, FONT, fontScale=tl, thickness=tf)[0]
+                        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
 
-                elif fig.geometry.geometry_name() == 'rectangle':
-                    bbox = fig.geometry
-                    bbox.draw_contour(frame_np, color, THICKNESS)
+                        cv2.rectangle(frame_np, c1, c2, fig.video_object.obj_class.color, -1, cv2.LINE_AA)  # filled
 
-                if SHOW_NAMES == True:
-                    tl = 1  # line/font thickness
-                    c1, c2 = (bbox.left, bbox.top), (bbox.right, bbox.bottom)
-                    tf = 1  # font thickness
-                    t_size = cv2.getTextSize(fig.video_object.obj_class.name, FONT, fontScale=tl, thickness=tf)[0]
-                    c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-
-                    cv2.rectangle(frame_np, c1, c2, fig.video_object.obj_class.color, -1, cv2.LINE_AA)  # filled
-
-                    cv2.putText(frame_np, fig.video_object.obj_class.name, (bbox.left + 1, bbox.top - 1),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1,
-                                [255, 255, 255],
-                                thickness=THICKNESS, lineType=cv2.LINE_AA, bottomLeftOrigin=False)
-                else:
-                    raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
+                        cv2.putText(frame_np, fig.video_object.obj_class.name, (bbox.left + 1, bbox.top - 1),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                    [255, 255, 255],
+                                    thickness=THICKNESS, lineType=cv2.LINE_AA, bottomLeftOrigin=False)
+                    else:
+                        raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
 
         if video is None:
             video = cv2.VideoWriter(local_path,
