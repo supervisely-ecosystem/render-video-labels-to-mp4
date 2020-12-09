@@ -20,7 +20,7 @@
 
 ## Overview
 
-Creates presentation mp4 file based on labeled video.
+Creates presentation mp4 file based on labeled video. Object instances are always rendered with random colors. It helps to distinguish objects of the same class on the frame. Class name is rendered with original class color. 
 
 ## How To Use
 
