@@ -17,7 +17,7 @@ START_FRAME = int(os.environ['modal.state.startFrame'])
 END_FRAME = int(os.environ['modal.state.endFrame'])
 SHOW_NAMES = bool(util.strtobool(os.environ['modal.state.showClassName']))
 THICKNESS = int(os.environ['modal.state.thickness'])
-OPACITY = float(os.environ['modal.state.opacity'])
+OPACITY = float(os.environ['modal.state.opacity']) / 100.0
 
 my_app = sly.AppService()
 
