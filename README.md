@@ -20,19 +20,21 @@
 
 ## Overview
 
-Counts the number of objects (instances), their figures, and the number of frames that have at least one object of a specific class.
-
-<img src="https://i.imgur.com/YjLBvMK.png"/>
+Creates presentation mp4 file based on labeled video.
 
 ## How To Use
 
 **Step 1:** Add app to your team from Ecosystem if it is not there
 
-**Step 2:** Run app from the context menu of video project: `context menu` -> `Reports` -> `Video objects stats for every class`
+**Step 2:** Copy to clicpboard id of the video that should be rendered with labels
 
-<img src="https://i.imgur.com/Xsg6AK7.png" width="500px"/>
+<img src="https://i.imgur.com/DssYeoe.png"/>
 
-**Step 3:** Wait until the app is started, press `Open` button in `Workspace tasks`. 
+**Step 2:** Run app from team apps page: 
+
+<img src="https://i.imgur.com/dmXj7K3.png"/>
+
+**Step 3:** Define input arguments in modal window: `video id`, `line width`, opacity for bitmap objects, frame range, etc..
 
 <img src="https://i.imgur.com/lWrXPiV.png"/>
 
