@@ -125,7 +125,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
         raise ValueError('No frames to create video')
     video.release()
 
-    remote_path = os.path.join('/rendered_videos', "{}_{}.mp4".format(VIDEO_ID, video_info.name))
+    remote_path = os.path.join('/rendered_videos', "{}_{}".format(VIDEO_ID, video_info.name))
     remote_path = api.file.get_free_name(TEAM_ID, remote_path)
 
     upload_progress = []
