@@ -13,7 +13,10 @@
     "videoId": "",
     "allFrames": true,
     "startFrame": 0,
-    "endFrame": 0
+    "endFrame": 0,
+    "showClassName": true,
+    "thickness": 3,
+    "opacity": 0.5
   },
   "task_location": "workspace_tasks",
   "isolate": true,

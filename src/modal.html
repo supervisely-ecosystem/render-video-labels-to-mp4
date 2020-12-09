@@ -21,4 +21,25 @@
             <el-input-number v-model="state.endFrame" :disabled="state.allFrames"></el-input-number>
         </div>
     </sly-field>
+
+    <sly-field title="Rendering options"
+               description="BBox line width and bitmap opacity">
+        <sly-icon slot="icon" :options="{ color: '#ea9d22', bgColor: '#fcefd9', rounded: false }">
+            <i class="zmdi zmdi-brush"></i>
+        </sly-icon>
+        <el-checkbox class="mt5" v-model="state.showClassName">Draw class name</el-checkbox>
+        <div class="fflex mt5">
+            <div style="min-width:80px;">Line width:</div>
+            <el-slider v-model="state.thickness"
+                       style="width: 100%"
+            ></el-slider>
+        </div>
+        <div class="fflex mt5">
+            <div style="min-width:110px;">Bitmap opacity:</div>
+            <el-slider v-model="state.opacity"
+                       style="width: 100%"
+                       :format-tooltip="(val) => { return val / 100; }"
+            ></el-slider>
+        </div>
+    </sly-field>
 </div>

@@ -1,18 +1,27 @@
-import supervisely_lib as sly
-from supervisely_lib.video_annotation.key_id_map import KeyIdMap
+import distutils
 import cv2
 import numpy as np
+
+import supervisely_lib as sly
+from supervisely_lib.video_annotation.key_id_map import KeyIdMap
 from supervisely_lib.geometry.constants import BITMAP
 from supervisely_lib.imaging.color import generate_rgb
 
+
 my_app = sly.AppService()
 
-PROJECT_ID = 1427
-TEAM_ID = 8
-#VIDEO_ID = 375956 #animal
-VIDEO_ID = 375957  #cars
-START_FRAME = 50
-END_FRAME = 140
+TEAM_ID = int(os.environ['context.teamId'])
+WORKSPACE_ID = int(os.environ['context.workspaceId'])
+
+VIDEO_ID = int(os.environ['modal.state.videoId'])
+ALL_FRAMES = bool(os.environ['modal.state.allFrames'])
+START_FRAME = int(os.environ['modal.state.startFrame'])
+END_FRAME = int(os.environ['modal.state.endFrame'])
+
+THICKNESS = int(os.environ['modal.state.thickness'])
+
+PROJECT_ID = None
+
 CLASSES = []
 COLOR_INS = True
 THICKNESS = 3
