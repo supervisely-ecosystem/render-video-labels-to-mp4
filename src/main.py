@@ -68,6 +68,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     exist_colors = []
     video = None
     local_path = os.path.join(my_app.data_dir, video_info.name)
+    progress = sly.Progress(video_info.name, END_FRAME - START_FRAME + 1)
     for frame_number in range(START_FRAME, END_FRAME):
         frame_np = api.video.frame.download_np(VIDEO_ID, frame_number)
         ann_frame = ann.frames.get(frame_number)
@@ -121,18 +122,19 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
         frame_np = cv2.cvtColor(frame_np, cv2.COLOR_BGR2RGB)
         video.write(frame_np)
+        progress.iter_done_report()
 
     if video is None:
         raise ValueError('No frames to create video')
     video.release()
 
-    remote_path = os.path.join()
+    remote_path = os.path.join('/rendered_videos', "{}_{}.mp4".format(VIDEO_ID, video_info.name))
     remote_path = api.file.get_free_name(TEAM_ID, remote_path)
 
     upload_progress = []
     def _print_progress(monitor, upload_progress):
         if len(upload_progress) == 0:
-            upload_progress.append(sly.Progress(message="Upload {!r}".format(video.name),
+            upload_progress.append(sly.Progress(message="Upload {!r}".format(video_info.name),
                                                 total_cnt=monitor.len,
                                                 ext_logger=app_logger,
                                                 is_size=True))
@@ -142,7 +144,6 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     app_logger.info("Uploaded to Team-Files: {!r}".format(remote_path))
     api.task._set_custom_output(task_id, file_info.id, sly.fs.get_file_name_with_ext(file_remote),
                                 description="File mp4", icon="zmdi zmdi-cloud-download")
-
     my_app.stop()
 
 
