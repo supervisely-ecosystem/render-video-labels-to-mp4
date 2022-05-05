@@ -22,5 +22,6 @@
   "isolate": true,
   "headless": true,
   "icon": "https://i.imgur.com/JH93zul.png",
-  "icon_background": "#FFFFFF"
+  "icon_background": "#FFFFFF",
+  "poster": "https://i.imgur.com/4hmKT5z.png"
 }
