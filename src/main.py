@@ -4,10 +4,11 @@ import cv2
 import numpy as np
 import time
 
-import supervisely_lib as sly
-from supervisely_lib.video_annotation.key_id_map import KeyIdMap
-from supervisely_lib.geometry.constants import BITMAP
-from supervisely_lib.imaging.color import generate_rgb
+import supervisely as sly
+from supervisely.app.v1.app_service import AppService
+from supervisely.video_annotation.key_id_map import KeyIdMap
+from supervisely.geometry.constants import BITMAP
+from supervisely.imaging.color import generate_rgb
 
 TEAM_ID = int(os.environ['context.teamId'])
 WORKSPACE_ID = int(os.environ['context.workspaceId'])
@@ -19,7 +20,7 @@ SHOW_NAMES = bool(util.strtobool(os.environ['modal.state.showClassName']))
 THICKNESS = int(os.environ['modal.state.thickness'])
 OPACITY = float(os.environ['modal.state.opacity']) / 100.0
 
-my_app = sly.AppService()
+my_app: AppService = AppService()
 
 PROJECT_ID = None
 CLASSES = []
@@ -141,7 +142,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
     file_info = api.file.upload(TEAM_ID, local_path, remote_path, lambda m: _print_progress(m, upload_progress))
     app_logger.info("Uploaded to Team-Files: {!r}".format(remote_path))
-    api.task._set_custom_output(task_id, file_info.id, file_info.name, file_url=file_info.full_storage_url,
+    api.task._set_custom_output(task_id, file_info.id, file_info.name, file_url=file_info.storage_path,
                                 description=f"File mp4: {remote_path}", icon="zmdi zmdi-cloud-download", download=True)
     sly.fs.silent_remove(local_path)
     my_app.stop()
