@@ -3,7 +3,9 @@
   "type": "app",
   "categories": [
     "videos",
-    "annotation transformation"
+    "annotation transformation",
+    "export",
+    "visualization"
   ],
   "description": "Creates presentation mp4 file based on labeled video",
   "docker_image": "supervisely/base-py-sdk:6",
