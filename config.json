@@ -6,7 +6,7 @@
     "annotation transformation",
     "export",
     "visualization",
-    "visualization-stats"
+    "visualization stats"
   ],
   "description": "Creates presentation mp4 file based on labeled video",
   "docker_image": "supervisely/base-py-sdk:6.23.1",
