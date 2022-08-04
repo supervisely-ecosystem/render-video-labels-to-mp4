@@ -12,8 +12,8 @@
 [![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/render-video-labels-to-mp4)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/render-video-labels-to-mp4)
-[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/render-video-labels-to-mp4)](https://supervise.ly)
-[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/render-video-labels-to-mp4)](https://supervise.ly)
+[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/render-video-labels-to-mp4.png)](https://supervise.ly)
+[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/render-video-labels-to-mp4.png)](https://supervise.ly)
 
 </div>
 
