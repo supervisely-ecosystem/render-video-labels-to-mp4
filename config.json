@@ -9,7 +9,7 @@
         "visualization stats"
     ],
     "description": "Creates presentation mp4 file based on labeled video",
-    "docker_image": "supervisely/import-export:0.0.2",
+    "docker_image": "supervisely/collaboration:0.0.1",
     "instance_version": "6.4.57",
     "main_script": "src/main.py",
     "modal_template": "src/modal.html",
