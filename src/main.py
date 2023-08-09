@@ -33,7 +33,7 @@ FONT = cv2.FONT_HERSHEY_COMPLEX
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
     global VIDEO_ID, START_FRAME, END_FRAME, PROJECT_ID
     if VIDEO_ID == "":
-        raise ValueError("Video ID is not defined")
+        raise ValueError("Please, copy Video ID from your project and paste it to the modal window.")
     VIDEO_ID = int(VIDEO_ID)
     video_info = api.video.get_info_by_id(VIDEO_ID)
     if video_info is None:
