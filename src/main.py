@@ -37,7 +37,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
     VIDEO_ID = int(VIDEO_ID)
     video_info = api.video.get_info_by_id(VIDEO_ID)
     if video_info is None:
-        raise ValueError("Video with id={!r} not found".format(VIDEO_ID))
+        raise ValueError(f"Video with id={VIDEO_ID} not found. Please, copy Video ID from your project and paste it to the modal window.")
     PROJECT_ID = video_info.project_id
     if ALL_FRAMES is True:
         START_FRAME = 0
