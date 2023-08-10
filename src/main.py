@@ -99,6 +99,9 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                         bbox = fig.geometry
                         bbox.draw_contour(frame_np, color, THICKNESS)
 
+                    else:
+                        raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
+                    
                     if SHOW_NAMES == True:
                         tl = 1  # line/font thickness
                         c1, c2 = (bbox.left, bbox.top), (bbox.right, bbox.bottom)
@@ -112,8 +115,6 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                                     cv2.FONT_HERSHEY_SIMPLEX, 1,
                                     [255, 255, 255],
                                     thickness=THICKNESS, lineType=cv2.LINE_AA, bottomLeftOrigin=False)
-                    else:
-                        raise TypeError("Geometry type {} not supported".format(fig.geometry.geometry_name()))
 
         if video is None:
             video = cv2.VideoWriter(local_path,
