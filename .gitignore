@@ -3,3 +3,4 @@
 *.mp4
 venv
 supervisely_lib
+.DS_Store

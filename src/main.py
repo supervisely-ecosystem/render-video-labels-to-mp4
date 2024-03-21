@@ -2,7 +2,6 @@ import os
 from distutils import util
 import cv2
 import numpy as np
-import time
 
 import supervisely as sly
 from supervisely.app.v1.app_service import AppService
@@ -10,15 +9,15 @@ from supervisely.video_annotation.key_id_map import KeyIdMap
 from supervisely.geometry.constants import BITMAP
 from supervisely.imaging.color import generate_rgb
 
-TEAM_ID = int(os.environ['context.teamId'])
-WORKSPACE_ID = int(os.environ['context.workspaceId'])
-VIDEO_ID = os.environ['modal.state.videoId']
-ALL_FRAMES = bool(util.strtobool(os.environ['modal.state.allFrames']))
-START_FRAME = int(os.environ['modal.state.startFrame'])
-END_FRAME = int(os.environ['modal.state.endFrame'])
-SHOW_NAMES = bool(util.strtobool(os.environ['modal.state.showClassName']))
-THICKNESS = int(os.environ['modal.state.thickness'])
-OPACITY = float(os.environ['modal.state.opacity']) / 100.0
+TEAM_ID = sly.env.team_id()
+WORKSPACE_ID = sly.env.workspace_id()
+VIDEO_ID = os.environ.get("modal.state.videoId", "")
+ALL_FRAMES = bool(util.strtobool(os.environ.get("modal.state.allFrames", "True")))
+START_FRAME = int(os.environ.get("modal.state.startFrame", 0))
+END_FRAME = int(os.environ.get("modal.state.endFrame", 0))
+SHOW_NAMES = bool(util.strtobool(os.environ.get("modal.state.showClassName", "True")))
+THICKNESS = int(os.environ.get("modal.state.thickness", 3))
+OPACITY = float(os.environ.get("modal.state.opacity", 50)) / 100.0
 
 my_app: AppService = AppService()
 
@@ -32,13 +31,26 @@ FONT = cv2.FONT_HERSHEY_COMPLEX
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
     global VIDEO_ID, START_FRAME, END_FRAME, PROJECT_ID
+    original_video_id = VIDEO_ID
     if VIDEO_ID == "":
         raise ValueError("Please, copy Video ID from your project and paste it to the modal window.")
+    VIDEO_ID = "".join(filter(str.isnumeric, VIDEO_ID))
+    if not VIDEO_ID.isnumeric():
+        raise ValueError(
+            f"Invalid Video ID: {original_video_id}. "
+            "Please, copy Video ID from your project and paste it to the modal window."
+        )
     VIDEO_ID = int(VIDEO_ID)
     video_info = api.video.get_info_by_id(VIDEO_ID)
     if video_info is None:
-        raise ValueError(f"Video with id={VIDEO_ID} not found. Please, copy Video ID from your project and paste it to the modal window.")
+        raise ValueError(f"Video with id={original_video_id} not found. Please, copy Video ID from your project and paste it to the modal window.")
     PROJECT_ID = video_info.project_id
+    project_info = api.project.get_info_by_id(PROJECT_ID)
+    if project_info.workspace_id != WORKSPACE_ID:
+        raise ValueError(
+            "Video is not in current workspace. "
+            "Please, copy Video ID from the project in current workspace."
+        )
     if ALL_FRAMES is True:
         START_FRAME = 0
         END_FRAME = video_info.frames_count - 1
@@ -165,4 +177,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sly.main_wrapper("main", main)
+    sly.main_wrapper("main", main, log_for_agent=False)
