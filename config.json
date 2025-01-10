@@ -1,31 +1,31 @@
 {
-    "name": "Render Video Labels to MP4",
-    "type": "app",
-    "categories": [
-        "videos",
-        "annotation transformation",
-        "export",
-        "visualization",
-        "visualization stats"
-    ],
-    "description": "Creates presentation mp4 file based on labeled video",
-    "docker_image": "supervisely/visualization-stats:6.73.45",
-    "instance_version": "6.8.88",
-    "main_script": "src/main.py",
-    "modal_template": "src/modal.html",
-    "modal_template_state": {
-        "videoId": "",
-        "allFrames": true,
-        "startFrame": 0,
-        "endFrame": 0,
-        "showClassName": true,
-        "thickness": 3,
-        "opacity": 50
-    },
-    "task_location": "workspace_tasks",
-    "isolate": true,
-    "headless": true,
-    "icon": "https://i.imgur.com/JH93zul.png",
-    "icon_background": "#FFFFFF",
-    "poster": "https://i.imgur.com/4hmKT5z.png"
+	"name": "Render Video Labels to MP4",
+	"type": "app",
+	"categories": [
+		"videos",
+		"annotation transformation",
+		"export",
+		"visualization",
+		"visualization stats"
+	],
+	"description": "Creates presentation mp4 file based on labeled video",
+	"docker_image": "supervisely/visualization-stats:6.73.276",
+	"instance_version": "6.12.17",
+	"main_script": "src/main.py",
+	"modal_template": "src/modal.html",
+	"modal_template_state": {
+		"videoId": "",
+		"allFrames": true,
+		"startFrame": 0,
+		"endFrame": 0,
+		"showClassName": true,
+		"thickness": 3,
+		"opacity": 50
+	},
+	"task_location": "workspace_tasks",
+	"isolate": true,
+	"headless": true,
+	"icon": "https://i.imgur.com/JH93zul.png",
+	"icon_background": "#FFFFFF",
+	"poster": "https://i.imgur.com/4hmKT5z.png"
 }
