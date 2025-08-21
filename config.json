@@ -10,7 +10,7 @@
     ],
     "description": "Creates presentation mp4 file based on labeled video",
     "docker_image": "supervisely/visualization-stats:6.73.45",
-    "instance_version": "6.8.88",
+    "instance_version": "6.9.11",
     "main_script": "src/main.py",
     "modal_template": "src/modal.html",
     "modal_template_state": {
