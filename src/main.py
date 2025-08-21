@@ -121,15 +121,9 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                         bbox = fig.geometry
                         bbox.draw_contour(frame_np, color, THICKNESS)
 
-                    elif fig.geometry.geometry_name() == "point":
+                    elif fig.geometry.geometry_name() in ["point", "line"]:
                         bbox = fig.geometry.to_bbox()
-                        point = fig.geometry
-                        point.draw(frame_np, color, THICKNESS)
-
-                    elif fig.geometry.geometry_name() == "line":
-                        bbox = fig.geometry.to_bbox()
-                        line = fig.geometry
-                        line.draw(frame_np, color, THICKNESS)
+                        fig.geometry.draw(frame_np, color, THICKNESS)
 
                     else:
                         raise TypeError(
