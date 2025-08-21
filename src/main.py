@@ -130,17 +130,11 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
                     elif fig.geometry.geometry_name() == "point":
                         point = fig.geometry
-                        cv2.circle(frame_np, (point.x, point.y), THICKNESS, color, -1)
+                        point.draw(frame_np, color, THICKNESS)
 
                     elif fig.geometry.geometry_name() == "line":
                         line = fig.geometry
-                        cv2.line(
-                            frame_np,
-                            (line.start.x, line.start.y),
-                            (line.end.x, line.end.y),
-                            color,
-                            THICKNESS,
-                        )
+                        line.draw(frame_np, color, THICKNESS)
 
                     else:
                         raise TypeError(
