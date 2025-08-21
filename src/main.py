@@ -12,6 +12,7 @@ from supervisely.imaging.color import generate_rgb
 TEAM_ID = sly.env.team_id()
 WORKSPACE_ID = sly.env.workspace_id()
 VIDEO_ID = os.environ.get("modal.state.videoId", "")
+sly.logger.info(f"Video ID: {VIDEO_ID}")
 ALL_FRAMES = bool(util.strtobool(os.environ.get("modal.state.allFrames", "True")))
 START_FRAME = int(os.environ.get("modal.state.startFrame", 0))
 END_FRAME = int(os.environ.get("modal.state.endFrame", 0))
@@ -31,7 +32,13 @@ FONT = cv2.FONT_HERSHEY_COMPLEX
 @sly.timeit
 def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger):
     global VIDEO_ID, START_FRAME, END_FRAME, PROJECT_ID
+
+    sly.logger.info(f"Else Video ID: {VIDEO_ID}")
+
     original_video_id = VIDEO_ID
+
+    sly.logger.info(f"Original Video ID: {VIDEO_ID}")
+
     if VIDEO_ID == "":
         raise ValueError(
             "Please, copy Video ID from your project and paste it to the modal window."
