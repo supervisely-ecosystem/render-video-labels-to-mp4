@@ -131,6 +131,10 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
                         bbox = fig.geometry
                         bbox.draw_contour(frame_np, color, THICKNESS)
 
+                    elif fig.geometry.geometry_name() in ["point", "line"]:
+                        bbox = fig.geometry.to_bbox()
+                        fig.geometry.draw(frame_np, color, THICKNESS)
+
                     else:
                         raise TypeError(
                             "Geometry type {} not supported".format(fig.geometry.geometry_name())
