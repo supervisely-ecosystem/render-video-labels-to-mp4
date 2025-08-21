@@ -2,5 +2,6 @@
 .idea
 *.mp4
 venv
+.venv/
 supervisely_lib
 .DS_Store
