@@ -133,7 +133,7 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
                     elif fig.geometry.geometry_name() in ["point", "line"]:
                         bbox = fig.geometry.to_bbox()
-                        fig.geometry.draw(frame_np, color, THICKNESS)
+                        fig.geometry.draw(frame_np, color, THICKNESS=15)
 
                     else:
                         raise TypeError(
