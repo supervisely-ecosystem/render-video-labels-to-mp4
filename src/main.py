@@ -24,6 +24,7 @@ END_FRAME = int(os.environ.get("modal.state.endFrame", 0))
 SHOW_NAMES = bool(util.strtobool(os.environ.get("modal.state.showClassName", "True")))
 THICKNESS = int(os.environ.get("modal.state.thickness", 3))
 OPACITY = float(os.environ.get("modal.state.opacity", 50)) / 100.0
+POINT_RADIUS = int(os.environ.get("modal.state.pointRadius", 5))
 
 my_app: AppService = AppService()
 
@@ -133,7 +134,10 @@ def render_video_labels_to_mp4(api: sly.Api, task_id, context, state, app_logger
 
                     elif fig.geometry.geometry_name() in ["point", "line"]:
                         bbox = fig.geometry.to_bbox()
-                        fig.geometry.draw(frame_np, color, THICKNESS=15)
+                        if fig.geometry.geometry_name() == "point":
+                            fig.geometry.draw(frame_np, color, thickness=POINT_RADIUS)
+                        else:
+                            fig.geometry.draw(frame_np, color, thickness=THICKNESS)
 
                     else:
                         raise TypeError(
