@@ -20,7 +20,8 @@
 		"endFrame": 0,
 		"showClassName": true,
 		"thickness": 3,
-		"opacity": 50
+		"opacity": 50,
+		"pointRadius": 5
 	},
 	"task_location": "workspace_tasks",
 	"isolate": true,
